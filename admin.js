@@ -15,10 +15,10 @@ const db = getFirestore(app);
 
 // Category to Subcategory mapping
 const subcategories = {
-  events: ["stages", "enterence", "pathway", "cheddar", "name board"],
-  catering: ["food corner", "Juice corner", "dishes", "drinks"],
-  special: ["mehandi", "haldi", "bride to be", "birthday"],
-  more: ["paper blast", "cold pyro", "dry ice", "sound", "light"]
+  events: ["Stage", "Enterence", "Pathway", "Cheddar", "NameBoard"],
+  catering: ["FoodCorner", "JuiceCorner", "Dishes", "Drinks"],
+  special: ["Mehandi", "Haldi", "BrideToBe", "Birthday"],
+  more: ["Paperblast", "Coldpyro", "DryIce", "Sound", "Light"]
 };
 
 // Show Tabs
