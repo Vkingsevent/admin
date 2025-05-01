@@ -1,143 +1,64 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyAMCJgfC_lox-EIEelRRh-7VjriZ7dftP0",
-  authDomain: "myalbumproject-dca7f.firebaseapp.com",
-  projectId: "myalbumproject-dca7f",
-  storageBucket: "myalbumproject-dca7f.appspot.com",
-  messagingSenderId: "685476424363",
-  appId: "1:685476424363:web:b6c91eb7d57e37d60d65ee"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+<nav>
+  <button onclick="showTab('addProduct')">➕ Add Product</button>
+  <button onclick="showTab('viewProducts')">📦 View Products</button>
+</nav>
 
-// Category to Subcategory mapping
-const subcategories = {
-  events: ["Stage", "Enterence", "Pathway", "Cheddar", "Nameboard"],
-  catering: ["FoodCorner", "JuiceCorner", "Dishes", "Drinks"],
-  special: ["Mehandi", "Haldi", "BrideToBe", "Birthday"],
-  more: ["Paperblast", "Coldpyro", "DryIce", "Sound", "Light"]
-};
+<main>
+  <section id="addProduct" class="tabContent">
+    <h2>Add a New Product</h2>
 
-// Show Tabs
-window.showTab = function(tabName) {
-  document.querySelectorAll('.tabContent').forEach(tab => tab.style.display = 'none');
-  document.getElementById(tabName).style.display = 'block';
-}
-showTab('addProduct'); // Default
+    <div class="form-group">
+      <label>Product Name:</label>
+      <input type="text" id="productName">
+    </div>
 
-// Update Subcategory when Category changes
-window.updateSubcategories = function() {
-  const category = document.getElementById('category').value;
-  const subcategorySelect = document.getElementById('subcategory');
-  subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
-  
-  if (subcategories[category]) {
-    subcategories[category].forEach(sub => {
-      const option = document.createElement('option');
-      option.value = sub;
-      option.textContent = sub;
-      subcategorySelect.appendChild(option);
-    });
-  }
-}
+    <div class="form-group">
+      <label>Category:</label>
+      <select id="category" onchange="updateSubcategories()">
+        <option value="">Select Category</option>
+        <option value="events">Event</option>
+        <option value="catering">Catering</option>
+        <option value="special">Special</option>
+        <option value="more">More</option>
+      </select>
+    </div>
 
-// Add Product
-window.addProduct = async function() {
-  const productName = document.getElementById('productName').value.trim();
-  const category = document.getElementById('category').value.trim();
-  const subcategory = document.getElementById('subcategory').value.trim();
-  const rate = document.getElementById('rate').value.trim();
-  const productImage = document.getElementById('productImage').files[0];
+    <div class="form-group">
+      <label>Subcategory:</label>
+      <select id="subcategory">
+        <option value="">Select Subcategory</option>
+      </select>
+    </div>
 
-  if (!productName || !category || !subcategory || !rate || !productImage) {
-    alert("Please fill all fields!");
-    return;
-  }
+    <div class="form-group">
+      <label>Rate:</label>
+      <input type="number" id="rate">
+    </div>
 
-  try {
-    // Upload image to Cloudinary
-    const formData = new FormData();
-    formData.append('file', productImage);
-    formData.append('upload_preset', 'Imageuploader');
+    <div class="form-group">
+      <label>Product Image:</label>
+      <input type="file" id="productImage">
+    </div>
 
-    const cloudinaryResponse = await fetch('https://api.cloudinary.com/v1_1/dmx3gppso/image/upload', {
-      method: 'POST',
-      body: formData
-    });
-    const cloudinaryData = await cloudinaryResponse.json();
-    const imageUrl = cloudinaryData.secure_url;
+    <button class="submit-btn" onclick="addProduct()">Add Product</button>
+  </section>
 
-    // Save to Firestore
-    await addDoc(collection(db, 'products'), {
-      productName,
-      category,
-      subcategory,
-      rate,
-      imageUrl
-    });
+  <section id="viewProducts" class="tabContent">
+    <h2>Products List</h2>
+    <div id="productsList"></div>
+  </section>
+</main>
 
-    alert("Product added successfully!");
-    document.getElementById('productName').value = '';
-    document.getElementById('category').value = '';
-    document.getElementById('subcategory').innerHTML = '<option value="">Select Subcategory</option>';
-    document.getElementById('rate').value = '';
-    document.getElementById('productImage').value = '';
-  } catch (error) {
-    console.error(error);
-    alert("Failed to add product!");
-  }
-}
-
-// Load Products
-async function loadProducts() {
-  const productsList = document.getElementById('productsList');
-  productsList.innerHTML = '';
-  const querySnapshot = await getDocs(collection(db, 'products'));
-  querySnapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    const productHTML = `
-      <div class="product-item">
-        <img src="${data.imageUrl}" alt="Product">
-        <h3>${data.productName}</h3>
-        <p><b>Category:</b> ${data.category}</p>
-        <p><b>Subcategory:</b> ${data.subcategory}</p>
-        <p><b>Rate:</b> ₹${data.rate}</p>
-        <button class="edit-btn" onclick="editProduct('${docSnap.id}', '${data.productName}', '${data.category}', '${data.subcategory}', '${data.rate}')">Edit</button>
-        <button onclick="deleteProduct('${docSnap.id}')">Delete</button>
-      </div>
-    `;
-    productsList.innerHTML += productHTML;
-  });
-}
-
-window.editProduct = async function(id, oldName, oldCategory, oldSubcategory, oldRate) {
-  const newName = prompt("Edit Product Name", oldName);
-  const newCategory = prompt("Edit Category", oldCategory);
-  const newSubcategory = prompt("Edit Subcategory", oldSubcategory);
-  const newRate = prompt("Edit Rate", oldRate);
-
-  if (newName && newCategory && newSubcategory && newRate) {
-    const productRef = doc(db, 'products', id);
-    await updateDoc(productRef, {
-      productName: newName,
-      category: newCategory,
-      subcategory: newSubcategory,
-      rate: newRate
-    });
-    alert("Product updated!");
-    loadProducts();
-  }
-}
-
-window.deleteProduct = async function(id) {
-  if (confirm("Are you sure you want to delete this product?")) {
-    await deleteDoc(doc(db, 'products', id));
-    alert("Product deleted!");
-    loadProducts();
-  }
-}
-
-document.querySelector("nav button:nth-child(2)").addEventListener("click", loadProducts);
+<script type="module" src="admin.js"></script>
+</body>
+</html>
