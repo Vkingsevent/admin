@@ -19,18 +19,18 @@ nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 10px;
+  padding: 2px;
 }
 
 nav button {
   background: #f1faee;
   color: #1d3557;
   border: none;
-  padding: 10px 20px;
+  padding: 5px 20px;
   margin: 5px;
   font-size: 16px;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 10px;
   transition: 0.3s ease;
 }
 
@@ -76,19 +76,24 @@ input, select {
 }
 
 .submit-btn {
-  background: #2a9d8f;
-  color: white;
-  padding: 12px 20px;
+  background-color: #007BFF; /* Bootstrap blue for standard look */
+  color: #fff;
+  padding: 12px 24px;
   font-size: 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
-  margin-top: 15px;
+  margin: 20px auto;
+  display: block; /* For centering */
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .submit-btn:hover {
-  background: #21867a;
+  background-color: #0000008f;
+  transform: scale(1.03);
 }
+
 
 #productsList {
   display: grid;
@@ -161,3 +166,92 @@ input, select {
     padding: 6px;
   }
 }
+
+
+
+/* CATEGORY FILTER BAR STYLED LIKE NAVBAR */
+#categoryFilters.filter-bar {
+  background-color: #1d3557;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 0;
+  scrollbar-width: none;
+}
+
+#categoryFilters::-webkit-scrollbar {
+  display: none;
+}
+
+/* SUBCATEGORY FILTER BAR (SMALLER + RESPONSIVE) */
+#subcategoryFilters.subfilter-bar {
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 0;
+  padding: 6px 0;
+  scrollbar-width: none;
+}
+
+#subcategoryFilters::-webkit-scrollbar {
+  display: none;
+}
+
+/* FILTER BUTTON STYLES (CATEGORY) */
+.filter-btn {
+  padding: 8px 14px;
+  margin: 0 4px;
+  background-color: #f1faee;
+  color: #1d3557;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.filter-btn:hover {
+  background-color: #457b9d;
+  color: white;
+}
+
+.filter-btn.active {
+  background-color: #ffffffb6;
+  color: #000;
+}
+
+/* SUBCATEGORY BUTTONS (SMALLER) */
+#subcategoryFilters .filter-btn {
+  padding: 6px 10px;
+  font-size: 13px;
+  margin: 0 3px;
+  background-color: rgba(0, 0, 0, 0.329);
+  color: #fcfcfc;
+}
+
+#subcategoryFilters .filter-btn:hover,
+#subcategoryFilters .filter-btn.active {
+  background-color: #2a9d8f;
+  color: #fff;
+}
+
+/* RESPONSIVE TWEAKS */
+@media (max-width: 600px) {
+  .filter-btn {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+
+  #subcategoryFilters .filter-btn {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
+
