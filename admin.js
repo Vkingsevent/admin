@@ -21,6 +21,8 @@ const subcategories = {
 };
 
 // Default state
+let selectedCategory = null;
+let selectedSubcategory = null;
 let editMode = false;
 let editProductId = null;
 
@@ -52,7 +54,7 @@ window.addProduct = async function() {
   const rate = document.getElementById('rate').value.trim();
   const productImage = document.getElementById('productImage').files[0];
 
-  if (!productName || !category || !subcategory || !rate) {
+  if (!category || !subcategory) {
     alert("Please fill all fields!");
     return;
   }
@@ -122,20 +124,27 @@ async function loadProducts() {
   const productsList = document.getElementById('productsList');
   productsList.innerHTML = '';
   const querySnapshot = await getDocs(collection(db, 'products'));
+
   querySnapshot.forEach(docSnap => {
     const data = docSnap.data();
-    const productHTML = `
-      <div class="product-item">
-        <img src="${data.imageUrl}" alt="Product">
-        <h3>${data.productName}</h3>
-        <p><b>Category:</b> ${data.category}</p>
-        <p><b>Subcategory:</b> ${data.subcategory}</p>
-        <p><b>Rate:</b> ₹${data.rate}</p>
-        <button class="edit-btn" onclick="editProduct('${docSnap.id}', '${data.productName}', '${data.category}', '${data.subcategory}', '${data.rate}', '${data.imageUrl}')">Edit</button>
-        <button onclick="deleteProduct('${docSnap.id}')">Delete</button>
-      </div>
-    `;
-    productsList.innerHTML += productHTML;
+
+    if (
+      (!selectedCategory || data.category === selectedCategory) &&
+      (!selectedSubcategory || data.subcategory === selectedSubcategory)
+    ) {
+      const productHTML = `
+        <div class="product-item">
+          <img src="${data.imageUrl}" alt="Product">
+          <h3>${data.productName}</h3>
+          <p><b>Category:</b> ${data.category}</p>
+          <p><b>Subcategory:</b> ${data.subcategory}</p>
+          <p><b>Rate:</b> ₹${data.rate}</p>
+          <button class="edit-btn" onclick="editProduct('${docSnap.id}', '${data.productName}', '${data.category}', '${data.subcategory}', '${data.rate}', '${data.imageUrl}')">Edit</button>
+          <button onclick="deleteProduct('${docSnap.id}')">Delete</button>
+        </div>
+      `;
+      productsList.innerHTML += productHTML;
+    }
   });
 }
 
@@ -160,4 +169,51 @@ window.deleteProduct = async function(id) {
   }
 }
 
-document.querySelector("nav button:nth-child(2)").addEventListener("click", loadProducts);
+document.querySelector("nav button:nth-child(2)").addEventListener("click", () => {
+  renderCategoryButtons();
+  loadProducts();
+});
+
+function renderCategoryButtons() {
+  const categoryFilters = document.getElementById('categoryFilters');
+  categoryFilters.innerHTML = '';
+
+  Object.keys(subcategories).forEach(category => {
+    const btn = document.createElement('button');
+    btn.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+    btn.className = 'filter-btn';
+    btn.onclick = () => {
+      selectedCategory = category;
+      selectedSubcategory = null;
+      renderSubcategoryButtons(category);
+      loadProducts();
+    };
+    categoryFilters.appendChild(btn);
+  });
+
+  // Functionality to reset category and subcategory, but no visible "All" button
+  if (!selectedCategory && !selectedSubcategory) {
+    loadProducts();
+  }
+}
+
+function renderSubcategoryButtons(category) {
+  const subFilter = document.getElementById('subcategoryFilters');
+  subFilter.innerHTML = '';
+
+  subcategories[category].forEach(sub => {
+    const btn = document.createElement('button');
+    btn.textContent = sub;
+    btn.className = 'filter-btn';
+    btn.onclick = () => {
+      selectedSubcategory = sub;
+      loadProducts();
+    };
+    subFilter.appendChild(btn);
+  });
+
+  // Automatically load all subcategory products if no subcategory selected
+  if (!selectedSubcategory) {
+    loadProducts();
+  }
+}
