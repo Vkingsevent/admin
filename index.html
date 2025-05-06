@@ -9,8 +9,8 @@
 <body>
 
 <nav>
-  <button onclick="showTab('addProduct')">➕ Add Product</button>
   <button onclick="showTab('viewProducts')">📦 View Products</button>
+  <button onclick="showTab('addProduct')">➕ Add Product</button>
 </nav>
 
 <main>
@@ -50,11 +50,12 @@
       <input type="file" id="productImage">
     </div>
 
-    <button class="submit-btn" onclick="addProduct()">Add Product</button>
+    <button class="submit-btn" onclick="addProduct()">Update</button>
   </section>
 
   <section id="viewProducts" class="tabContent">
-    <h2>Products List</h2>
+    <div id="categoryFilters" class="filter-bar"></div>
+    <div id="subcategoryFilters" class="subfilter-bar"></div>
     <div id="productsList"></div>
   </section>
 </main>
