@@ -217,3 +217,26 @@ function renderSubcategoryButtons(category) {
     loadProducts();
   }
 }
+
+
+
+window.handleLogin = function() {
+  const id = document.getElementById("loginId").value.trim();
+  const pw = document.getElementById("loginPassword").value.trim();
+  const error = document.getElementById("loginError");
+
+  if (id === "admin" && pw === "12345") {
+    sessionStorage.setItem("loggedIn", "true");
+    document.getElementById("loginOverlay").style.display = "none";
+  } else {
+    error.style.display = "block";
+  }
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  if (sessionStorage.getItem("loggedIn") === "true") {
+    document.getElementById("loginOverlay").style.display = "none";
+  } else {
+    document.getElementById("loginOverlay").style.display = "flex";
+  }
+});
