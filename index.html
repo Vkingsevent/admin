@@ -59,7 +59,17 @@
     <div id="productsList"></div>
   </section>
 </main>
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-box">
+    <h2>Admin Login</h2>
+    <input type="text" id="loginId" placeholder="Username">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="handleLogin()">Login</button>
+    <p id="loginError" style="color:red; display:none;">Invalid credentials!</p>
+  </div>
+</div>
 
 <script type="module" src="admin.js"></script>
+
 </body>
 </html>
